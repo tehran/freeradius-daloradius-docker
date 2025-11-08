@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  db:
+    image: mariadb:10.6
+    container_name: radius_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: radius
+      MYSQL_USER: radius
+      MYSQL_PASSWORD: radiuspass
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d
+    networks:
+      - radius_net
+
+  freeradius:
+    image: freeradius/freeradius-server:latest
+    container_name: freeradius
+    depends_on:
+      - db
+    restart: always
+    ports:
+      - "1812:1812/udp"
+      - "1813:1813/udp"
+    environment:
+      DB_HOST: db
+      DB_USER: radius
+      DB_PASS: radiuspass
+      DB_NAME: radius
+    volumes:
+      - ./freeradius/conf/clients.conf:/etc/freeradius/3.0/clients.conf
+      - ./freeradius/mods-enabled/sql:/etc/freeradius/3.0/mods-enabled/sql
+      - ./freeradius/sites-enabled/default:/etc/freeradius/3.0/sites-enabled/default
+    networks:
+      - radius_net
+
+  daloradius:
+    image: freeradius/daloradius
+    container_name: daloradius
+    depends_on:
+      - freeradius
+      - db
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      DB_HOST: db
+      DB_USER: radius
+      DB_PASS: radiuspass
+      DB_NAME: radius
+    networks:
+      - radius_net
+
+networks:
+  radius_net:
+    driver: bridge
