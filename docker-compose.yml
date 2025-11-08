@@ -38,7 +38,7 @@ services:
       - radius_net
 
   daloradius:
-    image: freeradius/daloradius
+    image: boro/freeradius-daloradius:latest
     container_name: daloradius
     depends_on:
       - freeradius
