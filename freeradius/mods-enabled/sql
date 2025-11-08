@@ -1,7 +1,7 @@
 sql {
     driver = "rlm_sql_mysql"
     dialect = "mysql"
-    server = "db"
+    server = "localhost"
     port = 3306
     login = "radius"
     password = "radiuspass"
