@@ -1,0 +1,21 @@
+authorize {
+    sql
+}
+
+authenticate {
+    Auth-Type PAP {
+        pap
+    }
+}
+
+accounting {
+    sql
+}
+
+session {
+    sql
+}
+
+post-auth {
+    sql
+}
